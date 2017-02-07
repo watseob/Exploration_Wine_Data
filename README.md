@@ -1,2 +1,2 @@
 # Exploration_Wine_Data
-[See a report on RPubs](http://rpubs.com/watseob/244176)
+[See a report on RPubs](http://rpubs.com/watseob/EDA)
