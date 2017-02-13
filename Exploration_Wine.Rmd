@@ -180,6 +180,23 @@ ggplot(wine, aes(x = quality)) +
 summary(wine$quality)
 ```
 
+I grouped the quality attribute as level attribute.  
+
+* Quality 3 and 4 -> low 
+* Quality 5 and 6 -> middle
+* Quality 7 and 8 -> high  
+
+
+```{r echo=FALSE,warning=FALSE,message=FALSE, Histogram14}
+wine$level <-  cut(wine$quality, c(0,4,6,10), labels = c("low","middle","high"), include.lowest = T)
+ggplot(wine, aes(x = level)) +
+  geom_bar() +
+  ggtitle("Quality Level Barchart") +
+  xlab("Quality (low, middle, high)")
+  
+```
+
+Most of quality level is middle
 The mean quality score is 5.636
 
 ## Univariate Analysis
@@ -402,9 +419,10 @@ The polygons are drawn in confidence interval 0.95.
 ### volatile acidity , citric acid quality
 
 ```{r echo=FALSE, Multivariate_Plots1}
-p1 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = quality))) +
+wine$fquality <- as.factor(wine$quality)
+p1 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = fquality))) +
   geom_jitter(alpha = 0.8) +
-  scale_color_continuous(low = "#baffbb", high = "#1b331b") +
+  scale_color_brewer() +
   xlab("Volatile Acidity  (acetic acid - g / dm^3)") +
   ylab("Citric Acid (g / dm^3)")
 
@@ -423,9 +441,9 @@ High quality wines have higher citric acid and lower volatile aicidity, while lo
 ### alcohol, citric acid, quality
 
 ```{r echo=FALSE, Multivariate_Plots2}
-p1 <- ggplot(wine,(aes(y=alcohol, x = citric.acid, col = quality))) +
+p1 <- ggplot(wine,(aes(y=alcohol, x = citric.acid, col = fquality))) +
   geom_jitter(alpha = 0.8) +
-  scale_color_continuous(low = "#baffbb", high = "#1b331b") +
+  scale_color_brewer() +
   xlab("Citric Acid (g / dm^3)")+
   ylab("Alcohol (% by volume)")
 
