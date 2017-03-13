@@ -83,20 +83,43 @@ ggplot(wine, aes(x = residual.sugar)) +
 summary(wine$residual.sugar)
 ```
 
+
 It's postively skewed. It has long tail on the right side.
 75% of wines have residual sugar below 2.6 g/dm^3.
 
+```{r echo=FALSE, Histogram5_xlim,warning=FALSE}
+ggplot(wine, aes(x = residual.sugar)) +
+  geom_histogram(binwidth = 0.2) +
+  ggtitle("Residual Sugar Histogram (binwidth = 0.2)") +
+  xlab("Residual Sugar (g / dm^3)") +
+  xlim(c(0,4))
+```
+  
+After removing ouliers, residual sugar looks normaly distributed.  
+
 ### Chlorides
 
-```{r echo=FALSE, Histogram6}
+```{r echo=FALSE, Histogram6,warning=FALSE}
 ggplot(wine, aes(x = chlorides)) +
   geom_histogram(binwidth = 0.01) +
   ggtitle("Chlorides Histogram (bindwidth = 0.01)") +
   xlab("Chloride (sodium chloride - g / dm^3)")
-summary(wine$chlorides)
+
 ```
+
 This plot looks normally distributed, but there is long tail on the right side.
 I wonder effects of those outliers on quality of wine later.
+
+```{r echo=FALSE, Histogram6_removed_outlier ,warning=FALSE}
+ggplot(wine, aes(x = chlorides)) +
+  geom_histogram(binwidth = 0.01) +
+  ggtitle("Chlorides Histogram (bindwidth = 0.01)") +
+  xlab("Chloride (sodium chloride - g / dm^3)") +
+  xlim(c(0,0.15))
+
+```
+  
+After removing outliers, we can see the distribution looks normal.  
 
 ### Free sulfur dioxide
 
@@ -122,6 +145,16 @@ summary(wine$total.sulfur.dioxide)
 ```
 
 Also, the plot is positively skewed. There are outliers near 300.
+
+```{r echo=FALSE, Histogram8_log}
+ggplot(subset(wine,wine$total.sulfur.dioxide<200), aes(x = total.sulfur.dioxide)) +
+  geom_histogram(binwidth = 0.1) +
+  ggtitle("Total sulfur dioxide Histogram ") +
+  xlab("Log(Total sulfur dioxide) (mg / dm^3)") +
+  scale_x_log10()
+```
+  
+After remvoing outliers and log scaling, the distribution looks normal.  
 
 ### Density
 
@@ -154,8 +187,22 @@ ggplot(wine, aes(x = sulphates)) +
   geom_histogram(binwidth = 0.05) +
   ggtitle("Sulphates Histogram (binwidth = 0.05)") +
   xlab("Sulphates (potassium sulphate - g / dm3)")
+
 summary(wine$sulphates)
 ```
+  
+Sulphates variale is left skewed.
+  
+```{r echo=FALSE, Histogram11_log}
+
+ggplot(wine, aes(x = sulphates)) +
+  geom_histogram(binwidth = 0.05) +
+  ggtitle("Sulphates Histogram (binwidth = 0.05)") +
+  xlab("Log(Sulphates) (potassium sulphate - g / dm3)") +
+  scale_x_log10()
+```
+  
+With a log scale on x-axis, the distribution looks normal.  
 
 ### Alcohol
 
@@ -168,6 +215,7 @@ summary(wine$alcohol)
 ```
 
 The plot is left skewed. 75% of wines have an alcohol below 11.10%.
+
 
 ### Quality
 
@@ -424,13 +472,13 @@ p1 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = fquality))) +
   geom_jitter(alpha = 0.8) +
   scale_color_brewer() +
   xlab("Volatile Acidity  (acetic acid - g / dm^3)") +
-  ylab("Citric Acid (g / dm^3)")
+  ylab("Citric Acid (g / dm^3)") + theme_dark()
 
 p2 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = level))) +
   geom_jitter(alpha = 0.3) + 
   stat_ellipse(geom = "polygon", alpha = 0.1, aes(fill = level)) +
   xlab("Volatile Acidity  (acetic acid - g / dm^3)") +
-  ylab("Citric Acid (g / dm^3)")
+  ylab("Citric Acid (g / dm^3)") + theme_dark()
 
 grid.arrange(p1,p2,ncol= 2)
 
@@ -493,7 +541,9 @@ In high quality of wines, most of wines which have low alcohol have high citric 
 
 I created a linear model to expect quality of wines in bivariate plots section with alcohol, volatile acidity, sulphates, citric acid, density and pH. However, it can explain 34.21% of variablity in quality which means it is not accracy.
 
-# Final Plots and Summary
+# Final Plots and Summary  
+
+
 
 ### Plot One
 ```{r echo=FALSE, Plot_One}
@@ -503,24 +553,28 @@ p1 <- ggplot(sub_wine, aes(x = quality, y = volatile.acidity, fill = quality))+
   geom_boxplot(width=0.1,alpha = 0.5) +
   stat_summary(fun.y = median, aes(group = 1), geom = "line") +
   ylab("Volatile Acidity  (acetic acid - g / dm^3)") +
-  xlab("Quality")
+  xlab("Quality") +
+  guides(fill=FALSE)
 
 p2 <- ggplot(sub_wine, aes(x = quality, y = citric.acid, fill = quality))  +
   geom_violin(alpha =0.5) +
   geom_boxplot(width=0.1,alpha = 0.5) +
   stat_summary(fun.y = median, aes(group = 1), geom = "line") +
   ylab("Volatile Acidity  (acetic acid - g / dm^3)") +
-  xlab("Quality")
+  xlab("Quality") +
+  guides(fill=FALSE)
 
 p3 <- ggplot(sub_wine, aes(x = quality, y = sulphates, fill = quality))  +
   geom_violin(alpha =0.5) +
   geom_boxplot(width=0.1,alpha = 0.5) +
-  stat_summary(fun.y = median, aes(group = 1), geom = "line")
+  stat_summary(fun.y = median, aes(group = 1), geom = "line") +
+  guides(fill=FALSE)
 
 p4 <- ggplot(sub_wine, aes(x = quality,  y = alcohol, fill = quality)) +
   geom_violin(alpha =0.5) +
   geom_boxplot(width=0.1,alpha = 0.5) +
-  stat_summary(fun.y = median, aes(group = 1), geom = "line")
+  stat_summary(fun.y = median, aes(group = 1), geom = "line") +
+  guides(fill=FALSE)
 
 grid.arrange(p1,p2, ncol = 2,top='violin plot')
 
@@ -533,13 +587,17 @@ The black lines among the median of each quality support volatile acidity and qu
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
+
 p1 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = level))) +
-  geom_jitter(alpha = 0.3) + 
+  geom_jitter(alpha = 0.3) +
+  guides(fill=FALSE) +
   stat_ellipse(geom = "polygon", alpha = 0.1, aes(fill = level)) +
   xlab("Volatile Acidity  (acetic acid - g / dm^3)") +
-  ylab("Citric Acid (g / dm^3)")
+  ylab("Citric Acid (g / dm^3)") +
+  labs(colour = "Quality Level")
+  
 
-p2 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = level))) + 
+p2 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = level))) +           guides(fill=FALSE) +
   stat_ellipse(geom = "polygon", alpha = 0.2, aes(fill = level),level = 0.10) +
   stat_ellipse(geom = "polygon", alpha = 0.2, aes(fill = level),level = 0.20) +
   stat_ellipse(geom = "polygon", alpha = 0.2, aes(fill = level),level = 0.30) +
@@ -548,15 +606,17 @@ p2 <- ggplot(wine,(aes(x=volatile.acidity, y = citric.acid, col = level))) +
   stat_ellipse(geom = "polygon", alpha = 0.2, aes(fill = level),level = 0.05) +
   stat_ellipse(geom = "polygon", alpha = 0.2, aes(fill = level),level = 0.01) +
   xlab("Volatile Acidity  (acetic acid - g / dm^3)") +
-  ylab("Citric Acid (g / dm^3)")
+  ylab("Citric Acid (g / dm^3)") +
+  labs(colour = "Quality Level")
+
 grid.arrange(p1,p2,ncol= 2, top='Citric acid vs Volatile acidity with Quality')
 
 ```
 
+### Description Two
+
 As creating more ellipses on the right side, we can see there are quality level. The less volatile acidity and the more citric acid determine quality of wine better.  
 (confidence intaval : 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01)
-
-### Description Two
 
 
 ### Plot Three
